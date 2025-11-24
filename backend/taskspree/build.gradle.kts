@@ -1,56 +1,41 @@
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+
 plugins {
-	java
-	id("org.springframework.boot") version "4.0.0"
-	id("io.spring.dependency-management") version "1.1.7"
+    alias(libs.plugins.spring.boot) apply false
+    alias(libs.plugins.spring.dependency.management) apply false
+    alias(libs.plugins.lombok) apply false
 }
 
-group = "com.hongsolo"
-version = "0.0.1-SNAPSHOT"
-description = "Demo project for Spring Boot"
+val springModulithVersion = libs.versions.springModulith.get()
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+allprojects {
+    group = "com.hongsolo"
+    version = "0.0.1-SNAPSHOT"
+
+    repositories {
+        mavenCentral()
+    }
 }
 
-configurations {
-	compileOnly {
-		extendsFrom(configurations.annotationProcessor.get())
-	}
-}
+subprojects {
+    apply(plugin = "java")
+    apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "io.freefair.lombok")
 
-repositories {
-	mavenCentral()
-}
+    configure<JavaPluginExtension> {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
+    }
 
-extra["springModulithVersion"] = "2.0.0-RC1"
+    configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension> {
+        imports {
+            mavenBom("org.springframework.modulith:spring-modulith-bom:$springModulithVersion")
+        }
+    }
 
-dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-flyway")
-	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.boot:spring-boot-starter-webmvc")
-	implementation("org.flywaydb:flyway-database-postgresql")
-	implementation("org.springframework.modulith:spring-modulith-starter-core")
-	implementation("org.springframework.modulith:spring-modulith-starter-jpa")
-	compileOnly("org.projectlombok:lombok")
-	runtimeOnly("org.postgresql:postgresql")
-	annotationProcessor("org.projectlombok:lombok")
-	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-flyway-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-	testImplementation("org.springframework.modulith:spring-modulith-starter-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-dependencyManagement {
-	imports {
-		mavenBom("org.springframework.modulith:spring-modulith-bom:${property("springModulithVersion")}")
-	}
-}
-
-tasks.withType<Test> {
-	useJUnitPlatform()
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }
