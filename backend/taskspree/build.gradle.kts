@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.lombok) apply false
 }
 
-val springModulithVersion = libs.versions.springModulith.get()
+val springBootVersion = libs.versions.springBoot.get()
 
 allprojects {
     group = "com.hongsolo"
@@ -31,7 +31,7 @@ subprojects {
 
     configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension> {
         imports {
-            mavenBom("org.springframework.modulith:spring-modulith-bom:$springModulithVersion")
+            mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
         }
     }
 
