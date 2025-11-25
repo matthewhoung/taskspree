@@ -9,6 +9,9 @@ dependencies {
     // 2. Validation is useful here for common value objects (Result/Error)
     implementation(libs.spring.boot.starter.validation)
 
-    // 3. Test support for common utilities
+    // 3. Core Web libraries (ResponseEntity, ExceptionHandler, etc.)
+    implementation(libs.spring.boot.starter.web)
+
+    // 4. Test support for common utilities
     testImplementation(libs.spring.boot.starter.test)
 }
