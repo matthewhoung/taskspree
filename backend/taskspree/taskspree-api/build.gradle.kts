@@ -5,7 +5,7 @@ plugins {
 dependencies {
     // 1. Internal Modules
     implementation(project(":taskspree-common"))
-    // implementation(project(":taskspree-modules:taskspree-users")) // Keep commented until we create the users module
+    implementation(project(":taskspree-modules:taskspree-users"))
 
     // 2. Core Spring
     implementation(libs.spring.boot.starter.web)
@@ -14,20 +14,15 @@ dependencies {
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.spring.boot.starter.validation)
 
-    // 3. Architecture (Modulith)
-    implementation(libs.spring.modulith.starter.core)
-    implementation(libs.spring.modulith.starter.jpa)
-
-    // 4. Database & Migration
+    // 3. Database & Migration
     runtimeOnly(libs.postgresql)
-    implementation(libs.flyway.core)
-    implementation(libs.flyway.database.postgresql)
+    implementation(libs.spring.boot.starter.flyway)
+    runtimeOnly(libs.flyway.database.postgresql)
 
-    // 5. Documentation
+    // 4. Documentation
     implementation(libs.springdoc.openapi)
 
-    // 6. Testing
+    // 5. Testing
     testImplementation(libs.spring.boot.starter.test)
-    testImplementation(libs.spring.modulith.starter.test)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

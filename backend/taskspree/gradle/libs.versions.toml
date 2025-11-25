@@ -1,9 +1,7 @@
 [versions]
 java = "21"
 springBoot = "4.0.0"
-springModulith = "1.2.0"
 lombok = "1.18.32"
-flyway = "10.10.0"
 jjwt = "0.12.5"
 testcontainers = "1.19.7"
 openapi = "2.5.0"
@@ -16,13 +14,9 @@ spring-boot-starter-validation = { module = "org.springframework.boot:spring-boo
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 
-# --- Architecture ---
-spring-modulith-starter-core = { module = "org.springframework.modulith:spring-modulith-starter-core", version.ref = "springModulith" }
-spring-modulith-starter-jpa = { module = "org.springframework.modulith:spring-modulith-starter-jpa", version.ref = "springModulith" }
-
 # --- Database ---
 postgresql = { module = "org.postgresql:postgresql" }
-flyway-core = { module = "org.flywaydb:flyway-core" }
+spring-boot-starter-flyway = { module = "org.springframework.boot:spring-boot-starter-flyway" }
 flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql" }
 
 # --- Utilities ---
@@ -36,7 +30,6 @@ jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 
 # --- Testing ---
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
-spring-modulith-starter-test = { module = "org.springframework.modulith:spring-modulith-starter-test", version.ref = "springModulith" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 
 [plugins]
