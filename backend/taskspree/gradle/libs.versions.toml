@@ -22,6 +22,7 @@ flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql
 # --- Utilities ---
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 springdoc-openapi = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "openapi" }
+dotenv = { module = "me.paulschwarz:spring-dotenv", version = "4.0.0" }
 
 # --- Auth ---
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
