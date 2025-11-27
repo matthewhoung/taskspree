@@ -21,8 +21,31 @@ jwt:
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
   issuer: taskspree
 
+# S3-compatible storage (MinIO for local, AWS S3 for production)
+s3:
+  endpoint: ${S3_ENDPOINT:http}
+  access-key: ${S3_ACCESS_KEY}
+  secret-key: ${S3_SECRET_KEY}
+  region: ${S3_REGION}
+  buckets:
+    tasks: taskspree-tasks
+    avatars: taskspree-avatars
+
+# File storage configuration
+storage:
+  temp-directory: ${UPLOAD_TEMP_DIR}
+  max-file-size: 52428800
+  max-concurrent-uploads-per-user: 10
+  orphan-cleanup-days: 3
+  presigned-url-expiry-hours: 1
+  retry:
+    max-attempts: 3
+    delay-ms: 5000
+    multiplier: 2.0
+
 logging:
   level:
     org.flywaydb: DEBUG
     org.hibernate.SQL: DEBUG
     org.springframework.security: DEBUG
+    com.hongsolo.taskspree.modules.storage: DEBUG

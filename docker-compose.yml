@@ -11,12 +11,43 @@ services:
       - "5432:5432"
     volumes:
       - taskspree_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d taskspree"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  # Cache
   taskspree-redis:
     image: redis:alpine
     container_name: taskspree-redis
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Object Storage (S3-compatible)
+  taskspree-minio:
+    image: minio/minio:latest
+    container_name: taskspree-minio
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - taskspree_minio:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
 
 volumes:
   taskspree_data:
+  taskspree_minio:

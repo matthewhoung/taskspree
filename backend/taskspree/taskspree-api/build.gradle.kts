@@ -4,32 +4,33 @@ plugins {
 
 import org.springframework.boot.gradle.tasks.run.BootRun
 
-dependencies {
-    // 1. Internal Modules
-    implementation(project(":taskspree-common"))
-    implementation(project(":taskspree-modules:taskspree-users"))
-    implementation(project(":taskspree-modules:taskspree-identity"))
+        dependencies {
+            // 1. Internal Modules
+            implementation(project(":taskspree-common"))
+            implementation(project(":taskspree-modules:taskspree-users"))
+            implementation(project(":taskspree-modules:taskspree-identity"))
+            implementation(project(":taskspree-modules:taskspree-storage"))
 
-    // 2. Core Spring
-    implementation(libs.spring.boot.starter.web)
-    implementation(libs.spring.boot.starter.data.jpa)
-    implementation(libs.spring.boot.starter.security)
-    implementation(libs.spring.boot.starter.actuator)
-    implementation(libs.spring.boot.starter.validation)
+            // 2. Core Spring
+            implementation(libs.spring.boot.starter.web)
+            implementation(libs.spring.boot.starter.data.jpa)
+            implementation(libs.spring.boot.starter.security)
+            implementation(libs.spring.boot.starter.actuator)
+            implementation(libs.spring.boot.starter.validation)
 
-    // 3. Database & Migration
-    runtimeOnly(libs.postgresql)
-    implementation(libs.spring.boot.starter.flyway)
-    runtimeOnly(libs.flyway.database.postgresql)
+            // 3. Database & Migration
+            runtimeOnly(libs.postgresql)
+            implementation(libs.spring.boot.starter.flyway)
+            runtimeOnly(libs.flyway.database.postgresql)
 
-    // 4. Documentation
-    implementation(libs.dotenv)
-    implementation(libs.springdoc.openapi)
+            // 4. Documentation
+            implementation(libs.dotenv)
+            implementation(libs.springdoc.openapi)
 
-    // 5. Testing
-    testImplementation(libs.spring.boot.starter.test)
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
+            // 5. Testing
+            testImplementation(libs.spring.boot.starter.test)
+            testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+        }
 
 tasks.named<BootRun>("bootRun") {
     // 1. Point to the .env file in the root project folder

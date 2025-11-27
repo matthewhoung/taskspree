@@ -16,6 +16,13 @@ spring:
     locations:
       - classpath:db/migration/users
       - classpath:db/migration/identity
+      - classpath:db/migration/storage
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 100MB
 
 # Server Configuration
 server:
