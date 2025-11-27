@@ -5,6 +5,8 @@ lombok = "1.18.32"
 jjwt = "0.12.5"
 testcontainers = "1.19.7"
 openapi = "2.8.0"
+awsS3 = "2.25.0"
+springRetry = "2.0.5"
 
 [libraries]
 # --- Core Spring ---
@@ -28,6 +30,13 @@ dotenv = { module = "me.paulschwarz:spring-dotenv", version = "4.0.0" }
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
+
+# --- Storage (S3-compatible) ---
+aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "awsS3" }
+
+# --- Async & Retry ---
+spring-retry = { module = "org.springframework.retry:spring-retry", version.ref = "springRetry" }
+spring-aspects = { module = "org.springframework:spring-aspects" }
 
 # --- Testing ---
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
