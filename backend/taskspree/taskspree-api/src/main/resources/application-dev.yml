@@ -15,7 +15,14 @@ spring:
     compose:
       enabled: false
 
+jwt:
+  secret: ${JWT_SECRET}
+  access-expiration: ${JWT_ACCESS_EXPIRATION:3600000}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+  issuer: taskspree
+
 logging:
   level:
     org.flywaydb: DEBUG
     org.hibernate.SQL: DEBUG
+    org.springframework.security: DEBUG

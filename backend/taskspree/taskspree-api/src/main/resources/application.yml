@@ -16,3 +16,18 @@ spring:
     locations:
       - classpath:db/migration/users
       - classpath:db/migration/identity
+
+# Server Configuration
+server:
+  port: 5000
+
+# OpenAPI / Swagger Configuration
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha

@@ -6,6 +6,9 @@ dependencies {
     // Core Shared Kernel
     implementation(project(":taskspree-common"))
 
+    // One-way dependency: Identity -> Users (for SignUp orchestration)
+    implementation(project(":taskspree-modules:taskspree-users"))
+
     // Spring Boot Starters
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.security)

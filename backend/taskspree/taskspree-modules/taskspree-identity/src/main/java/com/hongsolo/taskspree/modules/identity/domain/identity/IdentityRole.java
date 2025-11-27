@@ -1,6 +1,7 @@
-package com.hongsolo.taskspree.modules.identity.domain;
+package com.hongsolo.taskspree.modules.identity.domain.identity;
 
 import com.hongsolo.taskspree.common.domain.BaseEntity;
+import com.hongsolo.taskspree.modules.identity.domain.identity.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,10 +14,10 @@ import lombok.NoArgsConstructor;
 public class IdentityRole extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, unique = true)
+    @Column(name = "role", nullable = false, unique = true)
     private RoleType role;
 
-    @Column(length = 255)
+    @Column(name = "description", length = 255)
     private String description;
 
     private IdentityRole(RoleType role, String description) {

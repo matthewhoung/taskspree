@@ -1,4 +1,4 @@
-package com.hongsolo.taskspree.modules.identity.domain;
+package com.hongsolo.taskspree.modules.identity.domain.identity.enums;
 
 public enum RoleType {
     ADMIN("Systems Administrator"),

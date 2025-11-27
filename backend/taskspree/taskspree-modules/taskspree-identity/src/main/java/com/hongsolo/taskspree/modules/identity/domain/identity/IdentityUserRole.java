@@ -1,4 +1,4 @@
-package com.hongsolo.taskspree.modules.identity.domain;
+package com.hongsolo.taskspree.modules.identity.domain.identity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

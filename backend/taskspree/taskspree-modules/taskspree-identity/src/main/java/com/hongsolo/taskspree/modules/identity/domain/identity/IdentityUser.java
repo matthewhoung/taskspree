@@ -1,4 +1,4 @@
-package com.hongsolo.taskspree.modules.identity.domain;
+package com.hongsolo.taskspree.modules.identity.domain.identity;
 
 import com.hongsolo.taskspree.common.domain.BaseEntity;
 import jakarta.persistence.*;
@@ -22,6 +22,15 @@ public class IdentityUser extends BaseEntity {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled;
+
+    @Column(name = "disabled_at")
+    private Instant disabledAt;
+
+    @Column(name = "disabled_reason", length = 255)
+    private String disabledReason;
+
     @OneToMany(mappedBy = "identityUser", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<IdentityUserRole> roles = new HashSet<>();
 
@@ -34,6 +43,7 @@ public class IdentityUser extends BaseEntity {
     private IdentityUser(String email, String passwordHash) {
         this.email = email;
         this.passwordHash = passwordHash;
+        this.enabled = true;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
     }
@@ -49,6 +59,20 @@ public class IdentityUser extends BaseEntity {
 
     public void updatePassword(String newPasswordHash) {
         this.passwordHash = newPasswordHash;
+        this.updatedAt = Instant.now();
+    }
+
+    public void disableAccount(String reason) {
+        this.enabled = false;
+        this.disabledAt = Instant.now();
+        this.disabledReason = reason;
+        this.updatedAt = Instant.now();
+    }
+
+    public void enableAccount() {
+        this.enabled = true;
+        this.disabledAt = null;
+        this.disabledReason = null;
         this.updatedAt = Instant.now();
     }
 }
