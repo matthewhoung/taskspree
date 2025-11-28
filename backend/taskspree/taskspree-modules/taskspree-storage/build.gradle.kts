@@ -14,7 +14,7 @@ dependencies {
 
     // AWS S3 SDK (works with MinIO)
     implementation(libs.aws.s3)
-    implementation(libs.aws.crt)
+//    implementation(libs.aws.crt)
 
     // Spring Retry for upload retry logic
     implementation(libs.spring.retry)

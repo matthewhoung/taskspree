@@ -33,7 +33,6 @@ s3:
 
 # File storage configuration
 storage:
-  temp-directory: ${UPLOAD_TEMP_DIR}
   max-file-size: 52428800
   max-concurrent-uploads-per-user: 10
   orphan-cleanup-days: 3

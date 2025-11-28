@@ -1,6 +1,5 @@
 package com.hongsolo.taskspree.modules.storage.infrastructure.s3;
 
-import com.hongsolo.taskspree.modules.storage.infrastructure.s3.S3Properties;
 import com.hongsolo.taskspree.modules.storage.infrastructure.storage.StorageProperties;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +12,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;

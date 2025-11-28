@@ -43,10 +43,6 @@ public class AppUser extends BaseEntity {
         return new AppUser(identityId, email, username);
     }
 
-    public static AppUser create(UUID identityId, String email, String username) {
-        return new AppUser(identityId, email, username);
-    }
-
     public void updateUsername(String newUsername) {
         this.username = newUsername;
         this.updatedAt = Instant.now();

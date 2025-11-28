@@ -1,7 +1,7 @@
 package com.hongsolo.taskspree.common.infrastructure.cqrs;
 
 import com.hongsolo.taskspree.common.application.cqrs.Command;
-import com.hongsolo.taskspree.common.application.cqrs.CommandBus;
+import com.hongsolo.taskspree.common.application.cqrs.ICommandBus;
 import com.hongsolo.taskspree.common.application.cqrs.CommandHandler;
 import com.hongsolo.taskspree.common.application.behaviors.PipelineBehavior;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @RequiredArgsConstructor
-public class SpringCommandBus implements CommandBus {
+public class CommandBus implements ICommandBus {
 
     private final Map<Class<?>, CommandHandler> handlers = new ConcurrentHashMap<>();
     private final List<PipelineBehavior> behaviors;

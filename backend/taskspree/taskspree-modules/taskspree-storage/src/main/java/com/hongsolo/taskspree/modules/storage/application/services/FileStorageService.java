@@ -1,7 +1,7 @@
 package com.hongsolo.taskspree.modules.storage.application.services;
 
-import com.hongsolo.taskspree.common.application.cqrs.CommandBus;
-import com.hongsolo.taskspree.common.application.cqrs.QueryBus;
+import com.hongsolo.taskspree.common.application.cqrs.ICommandBus;
+import com.hongsolo.taskspree.common.application.cqrs.IQueryBus;
 import com.hongsolo.taskspree.common.application.services.IFileStorageService;
 import com.hongsolo.taskspree.common.domain.Result;
 import com.hongsolo.taskspree.modules.storage.application.storage.DeleteFile.DeleteFileCommand;
@@ -22,8 +22,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileStorageService implements IFileStorageService {
 
-    private final CommandBus commandBus;
-    private final QueryBus queryBus;
+    private final ICommandBus commandBus;
+    private final IQueryBus queryBus;
 
     @Override
     public List<FileUploadResult> initiateUpload(List<MultipartFile> files, UUID uploaderId) {
@@ -36,7 +36,7 @@ public class FileStorageService implements IFileStorageService {
             return success.value();
         }
 
-        // If command failed, return single failure result
+        // If command failed, return each single failure result
         log.warn("Upload initiation failed: {}", result.error().description());
         return List.of(FileUploadResult.failure(
                 "multiple files",

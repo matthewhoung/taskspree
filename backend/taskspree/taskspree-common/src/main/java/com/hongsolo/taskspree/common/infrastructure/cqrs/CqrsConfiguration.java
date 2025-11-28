@@ -19,8 +19,8 @@ import java.util.Map;
 public class CqrsConfiguration {
 
     private final ApplicationContext applicationContext;
-    private final SpringCommandBus commandBus;
-    private final SpringQueryBus queryBus;
+    private final CommandBus commandBus;
+    private final QueryBus queryBus;
 
     @PostConstruct
     public void registerHandlers() {

@@ -1,6 +1,6 @@
 package com.hongsolo.taskspree.common.application.cqrs;
 
-public interface QueryBus {
+public interface IQueryBus {
     /**
      * Dispatches a query to its registered handler.
      * @param query The query to execute.

@@ -1,6 +1,7 @@
 package com.hongsolo.taskspree.modules.identity.application.auth.SignUp;
 
 import com.hongsolo.taskspree.common.application.cqrs.CommandHandler;
+import com.hongsolo.taskspree.common.application.services.IUserFacadeService;
 import com.hongsolo.taskspree.common.domain.Result;
 import com.hongsolo.taskspree.modules.identity.domain.identity.IdentityErrors;
 import com.hongsolo.taskspree.modules.identity.domain.identity.IdentityRole;
@@ -10,13 +11,13 @@ import com.hongsolo.taskspree.modules.identity.domain.identity.enums.RoleType;
 import com.hongsolo.taskspree.modules.identity.domain.identity.repository.IIdentityRoleManager;
 import com.hongsolo.taskspree.modules.identity.domain.identity.repository.IIdentityUserManager;
 import com.hongsolo.taskspree.modules.identity.infrastructure.identity.IdentityRoleRepository;
-import com.hongsolo.taskspree.modules.users.domain.users.AppUser;
-import com.hongsolo.taskspree.modules.users.domain.users.repository.IAppUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -26,7 +27,7 @@ public class SignUpCommandHandler implements CommandHandler<SignUpCommand, Resul
     private final IIdentityUserManager identityUserManager;
     private final IIdentityRoleManager identityRoleManager;
     private final IdentityRoleRepository identityRoleRepository;
-    private final IAppUserRepository appUserRepository;
+    private final IUserFacadeService userFacadeService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -58,11 +59,13 @@ public class SignUpCommandHandler implements CommandHandler<SignUpCommand, Resul
         log.debug("Assigned USER role to identity: {}", identityUser.getId());
 
         // Create AppUser in users module
-        AppUser appUser = AppUser.create(identityUser.getId(), command.email());
-        appUserRepository.save(appUser);
+        UUID appUserId = userFacadeService.createUser(
+                new IUserFacadeService.CreateUserCommand(
+                        identityUser.getId(),
+                        command.email()
+                ));
 
-        log.debug("Created app user with ID: {}", appUser.getId());
-
+        log.debug("Created app user with ID: {}", appUserId);
         log.info("Signup successful for email: {}", command.email());
 
         return Result.success(SignUpResponse.of(identityUser.getId(), command.email()));

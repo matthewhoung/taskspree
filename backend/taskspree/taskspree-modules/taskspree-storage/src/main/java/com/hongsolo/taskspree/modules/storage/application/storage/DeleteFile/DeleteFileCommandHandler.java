@@ -18,8 +18,8 @@ public class DeleteFileCommandHandler
         implements CommandHandler<DeleteFileCommand, Result<Void>> {
 
     private final IStoredFileRepository storedFileRepository;
-    private final TempFileService tempFileService;
     private final S3StorageClient s3StorageClient;
+    // REMOVED: private final TempFileService tempFileService;
 
     @Override
     @Transactional
@@ -47,11 +47,6 @@ public class DeleteFileCommandHandler
             log.warn("User {} attempted to delete file {} owned by {}",
                     command.requesterId(), command.fileId(), storedFile.getUploaderId());
             return Result.failure(StorageErrors.NOT_FILE_OWNER);
-        }
-
-        // Delete from temp if exists
-        if (storedFile.getTempPath() != null) {
-            tempFileService.deleteTempFile(storedFile.getTempPath());
         }
 
         // Delete from S3 if uploaded
