@@ -1,6 +1,7 @@
 package com.hongsolo.taskspree.modules.storage.presentation;
 
 import com.hongsolo.taskspree.common.application.services.IFileStorageService;
+import com.hongsolo.taskspree.common.application.services.IUserFacadeService;
 import com.hongsolo.taskspree.common.presentation.ApiController;
 import com.hongsolo.taskspree.modules.storage.presentation.dto.DownloadUrlResponse;
 import com.hongsolo.taskspree.modules.storage.presentation.dto.FileStatusDto;
@@ -23,12 +24,14 @@ import java.util.UUID;
 public class FileStorageController extends ApiController {
 
     private final IFileStorageService fileStorageService;
+    private final IUserFacadeService userFacadeService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UploadInitiatedResponse> uploadFiles(
-            @RequestParam("files") List<MultipartFile> files,
-            @AuthenticationPrincipal UUID uploaderId
+            @RequestParam("files") List<MultipartFile> files
     ) {
+        UUID uploaderId = userFacadeService.getCurrentUser().get().userId();
+
         log.info("Received upload request: {} files from user {}", files.size(), uploaderId);
 
         List<IFileStorageService.FileUploadResult> results = fileStorageService.initiateUpload(files, uploaderId);
@@ -38,7 +41,7 @@ public class FileStorageController extends ApiController {
         log.info("Upload initiated: {} successful, {} failed",
                 response.successCount(), response.failedCount());
 
-        return ResponseEntity.accepted().body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/status")

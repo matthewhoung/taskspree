@@ -53,7 +53,7 @@ public class InitiateUploadCommandHandler
             return Result.failure(StorageErrors.TOO_MANY_FILES);
         }
 
-        String bucketName = String.valueOf(s3Properties.getBuckets());
+        String bucketName = s3Properties.getBuckets().getTasks();
 
         // 3. PARALLEL EXECUTION (Virtual Threads)
         // We use try-with-resources to automatically close the scope.

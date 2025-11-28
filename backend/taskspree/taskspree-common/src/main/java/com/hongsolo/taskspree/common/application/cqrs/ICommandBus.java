@@ -1,6 +1,6 @@
 package com.hongsolo.taskspree.common.application.cqrs;
 
-public interface CommandBus {
+public interface ICommandBus {
     /**
      * Dispatches a command to its registered handler.
      * @param command The command to execute.

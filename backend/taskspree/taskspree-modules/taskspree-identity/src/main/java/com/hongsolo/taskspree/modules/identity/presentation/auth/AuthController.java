@@ -1,6 +1,6 @@
 package com.hongsolo.taskspree.modules.identity.presentation.auth;
 
-import com.hongsolo.taskspree.common.application.cqrs.CommandBus;
+import com.hongsolo.taskspree.common.application.cqrs.ICommandBus;
 import com.hongsolo.taskspree.common.domain.Result;
 import com.hongsolo.taskspree.common.presentation.ApiController;
 import com.hongsolo.taskspree.modules.identity.application.auth.RefreshToken.RefreshTokenCommand;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController extends ApiController {
 
-    private final CommandBus commandBus;
+    private final ICommandBus commandBus;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody SignUpRequest request) {
