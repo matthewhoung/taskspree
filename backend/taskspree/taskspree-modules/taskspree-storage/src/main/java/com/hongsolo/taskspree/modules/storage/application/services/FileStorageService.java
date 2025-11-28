@@ -20,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FileStorageServiceImpl implements IFileStorageService {
+public class FileStorageService implements IFileStorageService {
 
     private final CommandBus commandBus;
     private final QueryBus queryBus;
