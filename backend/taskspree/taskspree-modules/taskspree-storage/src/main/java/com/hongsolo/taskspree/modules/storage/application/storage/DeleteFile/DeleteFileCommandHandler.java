@@ -2,7 +2,6 @@ package com.hongsolo.taskspree.modules.storage.application.storage.DeleteFile;
 
 import com.hongsolo.taskspree.common.application.cqrs.CommandHandler;
 import com.hongsolo.taskspree.common.domain.Result;
-import com.hongsolo.taskspree.modules.storage.application.services.TempFileService;
 import com.hongsolo.taskspree.modules.storage.domain.StorageErrors;
 import com.hongsolo.taskspree.modules.storage.domain.StoredFile;
 import com.hongsolo.taskspree.modules.storage.domain.repository.IStoredFileRepository;

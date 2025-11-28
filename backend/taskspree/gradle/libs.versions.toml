@@ -5,7 +5,8 @@ lombok = "1.18.32"
 jjwt = "0.12.5"
 testcontainers = "1.19.7"
 openapi = "2.8.0"
-awsS3 = "2.25.0"
+awsS3 = "2.39.4"
+awsCRT = "0.40.1"
 springRetry = "2.0.5"
 
 [libraries]
@@ -33,6 +34,7 @@ jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 
 # --- Storage (S3-compatible) ---
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "awsS3" }
+aws-crt = { module = "software.amazon.awssdk:aws-crt", version.ref = "awsCRT" }
 
 # --- Async & Retry ---
 spring-retry = { module = "org.springframework.retry:spring-retry", version.ref = "springRetry" }

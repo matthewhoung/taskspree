@@ -101,7 +101,7 @@ public class StoredFile extends BaseEntity {
         this.bucketName = bucketName;
         this.s3Key = s3Key;
         this.uploadedAt = Instant.now();
-        this.tempPath = null; // Clear temp path as file is now in S3
+        this.tempPath = null;
         this.errorMessage = null;
     }
 
@@ -140,14 +140,6 @@ public class StoredFile extends BaseEntity {
      */
     public boolean isDeleted() {
         return this.deletedAt != null;
-    }
-
-    /**
-     * Set the temp path after initial creation
-     * (Used when file is saved to temp storage)
-     */
-    public void setTempPath(String tempPath) {
-        this.tempPath = tempPath;
     }
 
     /**
