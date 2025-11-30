@@ -16,8 +16,8 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StoredFile extends BaseEntity {
 
-    @Column(name = "uploader_id", nullable = false)
-    private UUID uploaderId;
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
     @Column(name = "original_name", nullable = false)
     private String originalName;
@@ -57,13 +57,13 @@ public class StoredFile extends BaseEntity {
     private Instant deletedAt;
 
     private StoredFile(
-            UUID uploaderId,
+            UUID userId,
             String originalName,
             Long fileSize,
             String contentType,
             String tempPath
     ) {
-        this.uploaderId = uploaderId;
+        this.userId = userId;
         this.originalName = originalName;
         this.fileSize = fileSize;
         this.contentType = contentType;
@@ -77,13 +77,13 @@ public class StoredFile extends BaseEntity {
      * Factory method to create a new StoredFile in PENDING status
      */
     public static StoredFile create(
-            UUID uploaderId,
+            UUID userId,
             String originalName,
             Long fileSize,
             String contentType,
             String tempPath
     ) {
-        return new StoredFile(uploaderId, originalName, fileSize, contentType, tempPath);
+        return new StoredFile(userId, originalName, fileSize, contentType, tempPath);
     }
 
     /**

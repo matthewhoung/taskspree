@@ -26,17 +26,16 @@ public class FileStorageService implements IFileStorageService {
     private final IQueryBus queryBus;
 
     @Override
-    public List<FileUploadResult> initiateUpload(List<MultipartFile> files, UUID uploaderId) {
-        log.info("Initiating upload for {} files from user {}", files.size(), uploaderId);
+    public List<FileUploadResult> initiateUpload(List<MultipartFile> files, UUID userId) {
+        log.info("Initiating upload for {} files from user {}", files.size(), userId);
 
-        InitiateUploadCommand command = new InitiateUploadCommand(files, uploaderId);
+        InitiateUploadCommand command = new InitiateUploadCommand(files, userId);
         Result<List<FileUploadResult>> result = commandBus.execute(command);
 
         if (result.isSuccess() && result instanceof Result.Success<List<FileUploadResult>> success) {
             return success.value();
         }
 
-        // If command failed, return each single failure result
         log.warn("Upload initiation failed: {}", result.error().description());
         return List.of(FileUploadResult.failure(
                 "multiple files",
@@ -54,18 +53,11 @@ public class FileStorageService implements IFileStorageService {
     }
 
     @Override
-    public String getDownloadUrl(UUID fileId) {
+    public Result<String> getDownloadUrl(UUID fileId) {
         log.debug("Getting download URL for file {}", fileId);
 
         GetDownloadUrlQuery query = new GetDownloadUrlQuery(fileId);
-        Result<String> result = queryBus.execute(query);
-
-        if (result.isSuccess() && result instanceof Result.Success<String> success) {
-            return success.value();
-        }
-
-        log.warn("Failed to get download URL for file {}: {}", fileId, result.error().description());
-        return null;
+        return queryBus.execute(query);
     }
 
     @Override
@@ -83,15 +75,10 @@ public class FileStorageService implements IFileStorageService {
     }
 
     @Override
-    public void deleteFile(UUID fileId, UUID requesterId) {
-        log.info("Deleting file {} requested by {}", fileId, requesterId);
+    public Result<Void> deleteFile(UUID fileId, UUID userId) {
+        log.info("Deleting file {} requested by user {}", fileId, userId);
 
-        DeleteFileCommand command = new DeleteFileCommand(fileId, requesterId);
-        Result<Void> result = commandBus.execute(command);
-
-        if (!result.isSuccess()) {
-            log.warn("Failed to delete file {}: {}", fileId, result.error().description());
-            throw new RuntimeException(result.error().description());
-        }
+        DeleteFileCommand command = new DeleteFileCommand(fileId, userId);
+        return commandBus.execute(command);
     }
 }

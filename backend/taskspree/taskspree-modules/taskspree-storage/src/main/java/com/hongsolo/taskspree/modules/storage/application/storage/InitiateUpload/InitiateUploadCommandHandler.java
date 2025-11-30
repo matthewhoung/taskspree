@@ -36,19 +36,16 @@ public class InitiateUploadCommandHandler
     @Override
     public Result<List<FileUploadResult>> handle(InitiateUploadCommand command) {
         log.info("Processing upload for {} files from user {}",
-                command.files().size(), command.uploaderId());
+                command.files().size(), command.userId());
 
         // 1. GLOBAL VALIDATIONS
-        // These are fast, in-memory checks.
         Optional<String> countError = validationService.validateFileCount(command.files().size());
         if (countError.isPresent()) {
             return Result.failure(StorageErrors.NO_FILES_PROVIDED);
         }
 
-        // 2. RATE LIMIT CHECK (DB HIT)
-        // We do this once before spawning threads to save resources.
-        // Repository calls are implicitly Transactional (ReadOnly), so this is safe.
-        long pendingCount = storedFileRepository.countPendingByUploaderId(command.uploaderId());
+        // 2. RATE LIMIT CHECK
+        long pendingCount = storedFileRepository.countPendingByUserId(command.userId());
         if (validationService.hasReachedUploadLimit(pendingCount)) {
             return Result.failure(StorageErrors.TOO_MANY_FILES);
         }
@@ -56,20 +53,15 @@ public class InitiateUploadCommandHandler
         String bucketName = s3Properties.getBuckets().getTasks();
 
         // 3. PARALLEL EXECUTION (Virtual Threads)
-        // We use try-with-resources to automatically close the scope.
-        // We specify <FileUploadResult> to enforce strict typing.
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 
-            // 1. Prepare the tasks
             List<Callable<FileUploadResult>> tasks = new ArrayList<>();
             for (MultipartFile file : command.files()) {
-                tasks.add(() -> processSingleFile(file, command.uploaderId(), bucketName));
+                tasks.add(() -> processSingleFile(file, command.userId(), bucketName));
             }
 
-            // 2. Run all efficiently (The 'try' block waits for them to finish)
             List<Future<FileUploadResult>> futures = executor.invokeAll(tasks);
 
-            // 3. Unwrap results
             List<FileUploadResult> results = futures.stream()
                     .map(f -> {
                         try {
@@ -89,43 +81,31 @@ public class InitiateUploadCommandHandler
         }
     }
 
-    /**
-     * WORKER METHOD
-     * This runs on its own Virtual Thread.
-     * It manages its own granular transactions.
-     */
-    private FileUploadResult processSingleFile(MultipartFile file, UUID uploaderId, String bucketName) {
+    private FileUploadResult processSingleFile(MultipartFile file, UUID userId, String bucketName) {
         String originalName = file.getOriginalFilename();
         long fileSize = file.getSize();
         String contentType = file.getContentType();
 
         try {
-            // STEP A: Validate File (Memory)
+            // Validate File
             Optional<String> validationError = validationService.validateFile(file);
             if (validationError.isPresent()) {
                 return FileUploadResult.failure(originalName, fileSize, validationError.get());
             }
 
-            // STEP B: INITIAL DB INSERT (Transactional)
-            // storedFileRepository.save() opens a transaction, inserts, commits, and closes.
-            // This is very fast (milliseconds).
+            // Initial DB Insert
             StoredFile storedFile = StoredFile.create(
-                    uploaderId,
+                    userId,
                     originalName,
                     fileSize,
                     contentType,
                     null
             );
 
-            // This 'save' gives us the ID needed for the S3 Key
             storedFile = storedFileRepository.save(storedFile);
-
-            // Generate the key after we have the ID
             String s3Key = storedFile.generateStoredName();
 
-
-            // STEP C: S3 UPLOAD (Long Running - NO TRANSACTION)
-            // The DB connection is closed here. We are only using a Virtual Thread and Network Socket.
+            // S3 Upload
             s3StorageClient.uploadStream(
                     bucketName,
                     s3Key,
@@ -134,9 +114,7 @@ public class InitiateUploadCommandHandler
                     contentType
             );
 
-
-            // STEP D: FINAL DB UPDATE (Transactional)
-            // Re-open a short transaction to mark completion.
+            // Final DB Update
             storedFile.markCompleted(bucketName, s3Key);
             storedFileRepository.save(storedFile);
 
@@ -144,11 +122,6 @@ public class InitiateUploadCommandHandler
 
         } catch (Exception e) {
             log.error("Failed to upload file {}: {}", originalName, e.getMessage());
-
-            // OPTIONAL: If Step B succeeded but Step C failed, we technically have a PENDING orphan.
-            // You could add a try-catch block around Step C to delete the DB record if upload fails.
-            // However, the "Orphan Cleanup Job" you designed earlier covers this case elegantly.
-
             return FileUploadResult.failure(originalName, fileSize, "System error: " + e.getMessage());
         }
     }

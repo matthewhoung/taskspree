@@ -19,13 +19,12 @@ public class DeleteFileCommandHandler
 
     private final IStoredFileRepository storedFileRepository;
     private final S3StorageClient s3StorageClient;
-    // REMOVED: private final TempFileService tempFileService;
 
     @Override
     @Transactional
     public Result<Void> handle(DeleteFileCommand command) {
-        log.info("Processing file deletion: fileId={}, requesterId={}",
-                command.fileId(), command.requesterId());
+        log.info("Processing file deletion: fileId={}, userId={}",
+                command.fileId(), command.userId());
 
         // Find the file
         StoredFile storedFile = storedFileRepository.findById(command.fileId())
@@ -43,9 +42,9 @@ public class DeleteFileCommandHandler
         }
 
         // Check ownership
-        if (!storedFile.getUploaderId().equals(command.requesterId())) {
+        if (!storedFile.getUserId().equals(command.userId())) {
             log.warn("User {} attempted to delete file {} owned by {}",
-                    command.requesterId(), command.fileId(), storedFile.getUploaderId());
+                    command.userId(), command.fileId(), storedFile.getUserId());
             return Result.failure(StorageErrors.NOT_FILE_OWNER);
         }
 

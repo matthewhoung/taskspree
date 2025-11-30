@@ -10,7 +10,7 @@ public record DeleteFileCommand(
         @NotNull(message = "File ID is required")
         UUID fileId,
 
-        @NotNull(message = "Requester ID is required")
-        UUID requesterId
+        @NotNull(message = "User ID is required")
+        UUID userId
 ) implements Command<Result<Void>> {
 }

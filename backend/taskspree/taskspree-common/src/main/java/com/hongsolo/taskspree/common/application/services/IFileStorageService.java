@@ -1,5 +1,6 @@
 package com.hongsolo.taskspree.common.application.services;
 
+import com.hongsolo.taskspree.common.domain.Result;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -13,14 +14,12 @@ public interface IFileStorageService {
 
     /**
      * Initiates async upload for multiple files.
-     * Files are saved to temp storage and queued for S3 upload.
-     * Returns immediately with file IDs for tracking.
      *
-     * @param files      List of multipart files to upload
-     * @param uploaderId ID of the user uploading the files
+     * @param files  List of multipart files to upload
+     * @param userId ID of the user uploading the files
      * @return List of upload results with file IDs and initial status
      */
-    List<FileUploadResult> initiateUpload(List<MultipartFile> files, UUID uploaderId);
+    List<FileUploadResult> initiateUpload(List<MultipartFile> files, UUID userId);
 
     /**
      * Get status of uploaded files
@@ -34,13 +33,12 @@ public interface IFileStorageService {
      * Get presigned download URL (1 hour expiry by default)
      *
      * @param fileId ID of the file
-     * @return Presigned URL for downloading the file
+     * @return Result with presigned URL or error
      */
-    String getDownloadUrl(UUID fileId);
+    Result<String> getDownloadUrl(UUID fileId);
 
     /**
      * Link uploaded file to an entity (e.g., task, comment)
-     * This should be called after entity is created.
      *
      * @param fileId     ID of the file
      * @param entityType Type of entity (e.g., "TASK", "TASK_COMMENT")
@@ -51,10 +49,11 @@ public interface IFileStorageService {
     /**
      * Unlink and soft-delete file
      *
-     * @param fileId      ID of the file to delete
-     * @param requesterId ID of the user requesting deletion
+     * @param fileId ID of the file to delete
+     * @param userId ID of the user requesting deletion
+     * @return Result indicating success or error
      */
-    void deleteFile(UUID fileId, UUID requesterId);
+    Result<Void> deleteFile(UUID fileId, UUID userId);
 
     /**
      * Result of initiating a file upload
@@ -86,5 +85,6 @@ public interface IFileStorageService {
             String status,
             String errorMessage,
             String downloadUrl
-    ) {}
+    ) {
+    }
 }

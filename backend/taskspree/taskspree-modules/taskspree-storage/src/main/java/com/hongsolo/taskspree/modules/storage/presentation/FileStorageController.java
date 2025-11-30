@@ -2,6 +2,7 @@ package com.hongsolo.taskspree.modules.storage.presentation;
 
 import com.hongsolo.taskspree.common.application.services.IFileStorageService;
 import com.hongsolo.taskspree.common.application.services.IUserFacadeService;
+import com.hongsolo.taskspree.common.domain.Result;
 import com.hongsolo.taskspree.common.presentation.ApiController;
 import com.hongsolo.taskspree.modules.storage.presentation.dto.DownloadUrlResponse;
 import com.hongsolo.taskspree.modules.storage.presentation.dto.FileStatusDto;
@@ -10,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,14 +27,17 @@ public class FileStorageController extends ApiController {
     private final IUserFacadeService userFacadeService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UploadInitiatedResponse> uploadFiles(
+    public ResponseEntity<?> uploadFiles(
             @RequestParam("files") List<MultipartFile> files
     ) {
-        UUID uploaderId = userFacadeService.getCurrentUser().get().userId();
+        UUID userId = userFacadeService.getCurrentUser()
+                .orElseThrow(() -> new IllegalStateException("User not authenticated"))
+                .userId();
 
-        log.info("Received upload request: {} files from user {}", files.size(), uploaderId);
+        log.info("Received upload request: {} files from user {}", files.size(), userId);
 
-        List<IFileStorageService.FileUploadResult> results = fileStorageService.initiateUpload(files, uploaderId);
+        List<IFileStorageService.FileUploadResult> results =
+                fileStorageService.initiateUpload(files, userId);
 
         UploadInitiatedResponse response = UploadInitiatedResponse.from(results);
 
@@ -50,9 +53,9 @@ public class FileStorageController extends ApiController {
     ) {
         log.debug("Status request for {} files", fileIds.size());
 
-        List<IFileStorageService.FileStatusDto> statuses = fileStorageService.getFileStatuses(fileIds);
+        List<IFileStorageService.FileStatusDto> statuses =
+                fileStorageService.getFileStatuses(fileIds);
 
-        // Map to presentation DTOs
         List<FileStatusDto> dtos = statuses.stream()
                 .map(s -> new FileStatusDto(
                         s.fileId(),
@@ -69,29 +72,29 @@ public class FileStorageController extends ApiController {
     }
 
     @GetMapping("/{fileId}/download-url")
-    public ResponseEntity<DownloadUrlResponse> getDownloadUrl(
-            @PathVariable UUID fileId
-    ) {
+    public ResponseEntity<?> getDownloadUrl(@PathVariable("fileId") UUID fileId) {
         log.debug("Download URL request for file {}", fileId);
 
-        String url = fileStorageService.getDownloadUrl(fileId);
+        Result<String> result = fileStorageService.getDownloadUrl(fileId);
 
-        if (url == null) {
-            return ResponseEntity.notFound().build();
+        if (result.isSuccess() && result instanceof Result.Success<String> success) {
+            DownloadUrlResponse response = DownloadUrlResponse.of(fileId, success.value());
+            return ResponseEntity.ok(response);
         }
 
-        return ResponseEntity.ok(DownloadUrlResponse.of(fileId, url));
+        return handleResult(result);
     }
 
     @DeleteMapping("/{fileId}")
-    public ResponseEntity<Void> deleteFile(
-            @PathVariable UUID fileId,
-            @AuthenticationPrincipal UUID requesterId
-    ) {
-        log.info("Delete request for file {} from user {}", fileId, requesterId);
+    public ResponseEntity<?> deleteFile(@PathVariable("fileId") UUID fileId) {
+        UUID userId = userFacadeService.getCurrentUser()
+                .orElseThrow(() -> new IllegalStateException("User not authenticated"))
+                .userId();
 
-        fileStorageService.deleteFile(fileId, requesterId);
+        log.info("Delete request for file {} from user {}", fileId, userId);
 
-        return ResponseEntity.noContent().build();
+        Result<Void> result = fileStorageService.deleteFile(fileId, userId);
+
+        return handleResult(result);
     }
 }
