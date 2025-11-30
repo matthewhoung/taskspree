@@ -16,9 +16,9 @@ public interface IStoredFileRepository {
 
     List<StoredFile> findAllById(Iterable<UUID> ids);
 
-    Optional<StoredFile> findByIdAndUploaderId(UUID id, UUID uploaderId);
+    Optional<StoredFile> findByIdAndUserId(UUID id, UUID userId);
 
-    List<StoredFile> findByUploaderId(UUID uploaderId);
+    List<StoredFile> findByUserId(UUID userId);
 
     /**
      * Find files pending upload or failed (for retry)
@@ -33,10 +33,10 @@ public interface IStoredFileRepository {
     /**
      * Count files by status for a user
      */
-    long countByUploaderIdAndStatus(UUID uploaderId, FileStatus status);
+    long countByUserIdAndStatus(UUID userId, FileStatus status);
 
     /**
      * Check if user has reached concurrent upload limit
      */
-    long countPendingByUploaderId(UUID uploaderId);
+    long countPendingByUserId(UUID userId);
 }

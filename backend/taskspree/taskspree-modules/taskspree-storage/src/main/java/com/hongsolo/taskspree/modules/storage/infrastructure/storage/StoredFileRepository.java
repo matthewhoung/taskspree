@@ -17,11 +17,11 @@ import java.util.UUID;
 public interface StoredFileRepository
         extends JpaRepository<StoredFile, UUID>, IStoredFileRepository {
 
-    Optional<StoredFile> findByIdAndUploaderId(UUID id, UUID uploaderId);
+    Optional<StoredFile> findByIdAndUserId(UUID id, UUID userId);
 
-    List<StoredFile> findByUploaderId(UUID uploaderId);
+    List<StoredFile> findByUserId(UUID userId);
 
-    long countByUploaderIdAndStatus(UUID uploaderId, FileStatus status);
+    long countByUserIdAndStatus(UUID userId, FileStatus status);
 
     /**
      * Find files pending upload (PENDING or FAILED with retries remaining)
@@ -58,11 +58,11 @@ public interface StoredFileRepository
      */
     @Query("""
             SELECT COUNT(f) FROM StoredFile f
-            WHERE f.uploaderId = :uploaderId
+            WHERE f.userId = :userId
             AND f.status IN ('PENDING', 'UPLOADING')
             AND f.deletedAt IS NULL
             """)
-    long countPendingByUploaderIdQuery(@Param("uploaderId") UUID uploaderId);
+    long countPendingByUserIdQuery(@Param("userId") UUID userId);
 
     // ==================== Default Method Bridges ====================
 
@@ -79,7 +79,7 @@ public interface StoredFileRepository
     }
 
     @Override
-    default long countPendingByUploaderId(UUID uploaderId) {
-        return countPendingByUploaderIdQuery(uploaderId);
+    default long countPendingByUserId(UUID userId) {
+        return countPendingByUserIdQuery(userId);
     }
 }

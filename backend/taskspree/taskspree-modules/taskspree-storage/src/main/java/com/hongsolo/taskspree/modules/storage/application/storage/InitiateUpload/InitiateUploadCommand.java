@@ -10,6 +10,6 @@ import java.util.UUID;
 
 public record InitiateUploadCommand(
         List<MultipartFile> files,
-        UUID uploaderId
+        UUID userId
 ) implements Command<Result<List<FileUploadResult>>> {
 }
