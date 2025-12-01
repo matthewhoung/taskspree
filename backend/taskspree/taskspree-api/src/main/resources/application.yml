@@ -20,6 +20,7 @@ spring:
       - classpath:db/migration/users
       - classpath:db/migration/identity
       - classpath:db/migration/storage
+      - classpath:db/migration/marketplace
 
   servlet:
     multipart:

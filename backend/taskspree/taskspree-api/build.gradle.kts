@@ -10,6 +10,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
             implementation(project(":taskspree-modules:taskspree-users"))
             implementation(project(":taskspree-modules:taskspree-identity"))
             implementation(project(":taskspree-modules:taskspree-storage"))
+            implementation(project(":taskspree-modules:taskspree-marketplace"))
 
             // 2. Core Spring
             implementation(libs.spring.boot.starter.web)
