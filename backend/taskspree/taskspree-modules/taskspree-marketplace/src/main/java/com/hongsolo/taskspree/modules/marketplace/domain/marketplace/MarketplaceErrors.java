@@ -177,4 +177,10 @@ public final class MarketplaceErrors {
             "User not found",
             Error.ErrorType.NOT_FOUND
     );
+
+    public static final Error INVITEE_NOT_FOUND = new Error(
+            "Marketplace.InviteeNotFound",
+            "No user found with this email address",
+            Error.ErrorType.NOT_FOUND
+    );
 }

@@ -3,16 +3,17 @@ package com.hongsolo.taskspree.common.application.services;
 import java.util.Optional;
 import java.util.UUID;
 
-/*
+/**
  * Facade pattern for user-related operations.
- *
- * This abstraction allows modules to interact with use data without
+ * This abstraction allows modules to interact with user data without
  * directly depending on the Users module.
  */
 public interface IUserFacadeService {
 
     // === Queries ===
+    Optional<UserDto> findById(UUID userId);
     Optional<UserDto> findByIdentityId(UUID identityId);
+    Optional<UserDto> findByEmail(String email);
     Optional<UserDto> getCurrentUser();
 
     // === Commands ===
@@ -20,14 +21,14 @@ public interface IUserFacadeService {
 
     // === DTOs ===
     record UserDto(
-        UUID userId,
-        UUID identityId,
-        String email,
-        String username
+            UUID userId,
+            UUID identityId,
+            String email,
+            String username
     ) { }
 
     record CreateUserCommand(
-        UUID identityId,
-        String email
+            UUID identityId,
+            String email
     ) { }
 }
