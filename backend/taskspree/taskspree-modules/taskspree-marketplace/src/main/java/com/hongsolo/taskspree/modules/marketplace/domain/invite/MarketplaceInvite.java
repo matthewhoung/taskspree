@@ -25,6 +25,9 @@ public class MarketplaceInvite extends BaseEntity {
     @Column(name = "invitee_user_id", nullable = false)
     private UUID inviteeUserId;
 
+    @Column(name = "invitee_email", nullable = false)
+    private String inviteeEmail;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private MarketplaceRole role;
@@ -53,12 +56,14 @@ public class MarketplaceInvite extends BaseEntity {
     private MarketplaceInvite(
             Marketplace marketplace,
             UUID inviteeUserId,
+            String inviteeEmail,
             MarketplaceRole role,
             UUID invitedByUserId,
             String token
     ) {
         this.marketplace = marketplace;
         this.inviteeUserId = inviteeUserId;
+        this.inviteeEmail = inviteeEmail;
         this.role = role;
         this.invitedByUserId = invitedByUserId;
         this.token = token;
@@ -73,11 +78,12 @@ public class MarketplaceInvite extends BaseEntity {
     public static MarketplaceInvite create(
             Marketplace marketplace,
             UUID inviteeUserId,
+            String inviteeEmail,
             MarketplaceRole role,
             UUID invitedByUserId,
             String token
     ) {
-        return new MarketplaceInvite(marketplace, inviteeUserId, role, invitedByUserId, token);
+        return new MarketplaceInvite(marketplace, inviteeUserId, inviteeEmail, role, invitedByUserId, token);
     }
 
     /**
@@ -86,12 +92,13 @@ public class MarketplaceInvite extends BaseEntity {
     public static MarketplaceInvite create(
             Marketplace marketplace,
             UUID inviteeUserId,
+            String inviteeEmail,
             MarketplaceRole role,
             UUID invitedByUserId,
             String token,
             int expiryDays
     ) {
-        MarketplaceInvite invite = new MarketplaceInvite(marketplace, inviteeUserId, role, invitedByUserId, token);
+        MarketplaceInvite invite = new MarketplaceInvite(marketplace, inviteeUserId, inviteeEmail, role, invitedByUserId, token);
         invite.expiresAt = Instant.now().plusSeconds(expiryDays * 24L * 60 * 60);
         return invite;
     }

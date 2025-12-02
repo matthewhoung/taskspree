@@ -1,6 +1,7 @@
 package com.hongsolo.taskspree.modules.identity.application.auth.SignUp;
 
 import com.hongsolo.taskspree.common.application.cqrs.CommandHandler;
+import com.hongsolo.taskspree.common.application.services.IMarketplaceFacadeService;
 import com.hongsolo.taskspree.common.application.services.IUserFacadeService;
 import com.hongsolo.taskspree.common.domain.Result;
 import com.hongsolo.taskspree.modules.identity.domain.identity.IdentityErrors;
@@ -28,37 +29,37 @@ public class SignUpCommandHandler implements CommandHandler<SignUpCommand, Resul
     private final IIdentityRoleManager identityRoleManager;
     private final IdentityRoleRepository identityRoleRepository;
     private final IUserFacadeService userFacadeService;
+    private final IMarketplaceFacadeService marketplaceFacadeService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public Result<SignUpResponse> handle(SignUpCommand command) {
-        log.info("Precessing sign-up for email: {}", command.email());
+        log.info("Processing sign-up for email: {}", command.email());
 
-        // Check if email already exists
+        // 1. Check if email already exists
         if (identityUserManager.existsByEmail((command.email()))) {
             log.warn("Sign up failed: Email {} is already in use", command.email());
-
             return Result.failure(IdentityErrors.EMAIL_ALREADY_EXISTS);
         }
 
-        // Hash password and create identity user
+        // 2. Hash password and create identity user
         String passwordHash = passwordEncoder.encode(command.password());
         IdentityUser identityUser = IdentityUser.create(command.email(), passwordHash);
         identityUser = identityUserManager.save(identityUser);
 
         log.debug("Created identity user with ID: {}", identityUser.getId());
 
-        // get user role and assign to user
+        // 3. Get user role and assign to user
         IdentityRole userRole = identityRoleRepository.findByRole(RoleType.USER)
-                .orElseThrow(() -> new IllegalStateException("role not found: Ensure RoleSeeder ran before user sign up"));
+                .orElseThrow(() -> new IllegalStateException("Role not found: Ensure RoleSeeder ran before user sign up"));
 
         IdentityUserRole identityUserRole = IdentityUserRole.create(identityUser, userRole);
         identityRoleManager.save(identityUserRole);
 
         log.debug("Assigned USER role to identity: {}", identityUser.getId());
 
-        // Create AppUser in users module
+        // 4. Create AppUser in users module
         UUID appUserId = userFacadeService.createUser(
                 new IUserFacadeService.CreateUserCommand(
                         identityUser.getId(),
@@ -66,6 +67,25 @@ public class SignUpCommandHandler implements CommandHandler<SignUpCommand, Resul
                 ));
 
         log.debug("Created app user with ID: {}", appUserId);
+
+        // 5. Create default marketplace for the new user (NEW)
+        String username = command.email().split("@")[0];
+        String marketplaceName = username + "'s Marketplace";
+
+        try {
+            UUID marketplaceId = marketplaceFacadeService.createDefaultMarketplace(
+                    new IMarketplaceFacadeService.CreateDefaultMarketplaceCommand(
+                            appUserId,
+                            marketplaceName
+                    )
+            );
+            log.debug("Created default marketplace with ID: {}", marketplaceId);
+        } catch (Exception e) {
+            // Log but don't fail signup if marketplace creation fails
+            // User can create marketplace manually later
+            log.warn("Failed to create default marketplace for user {}: {}", appUserId, e.getMessage());
+        }
+
         log.info("Signup successful for email: {}", command.email());
 
         return Result.success(SignUpResponse.of(identityUser.getId(), command.email()));

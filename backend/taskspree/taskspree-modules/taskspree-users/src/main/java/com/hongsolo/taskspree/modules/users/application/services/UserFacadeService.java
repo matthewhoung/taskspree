@@ -21,8 +21,20 @@ public class UserFacadeService implements IUserFacadeService {
     private final IAppUserRepository appUserRepository;
 
     @Override
+    public Optional<UserDto> findById(UUID userId) {
+        return appUserRepository.findById(userId)
+                .map(this::toUserDto);
+    }
+
+    @Override
     public Optional<UserDto> findByIdentityId(UUID identityId) {
         return appUserRepository.findByIdentityId(identityId)
+                .map(this::toUserDto);
+    }
+
+    @Override
+    public Optional<UserDto> findByEmail(String email) {
+        return appUserRepository.findByEmail(email)
                 .map(this::toUserDto);
     }
 
